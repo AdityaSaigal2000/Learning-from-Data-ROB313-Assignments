@@ -244,6 +244,9 @@ PlotTime()
 
 #Code for Regression:
 #Load data
+from data_utils import load_dataset
+import numpy as np
+import matplotlib.pyplot as plt
 xtrain, xvalid, xtest, ytrain, yvalid, ytest = load_dataset('mauna_loa')
 
 #Function to compute weight vector by minimizing least squares loss between the model and actual data.
@@ -289,7 +292,9 @@ def SVD_Classification(x_train,y_train):
     u,s,vh=np.linalg.svd(X)
     u1=u[:,0:np.shape(X)[1]]
     Y=np.multiply(y_train,1)
-    w=np.dot(vh.transpose(),np.dot(np.linalg.inv(np.diag(s)),np.dot(u1.transpose(),y_train)))
+    Y=np.multiply(Y,2)
+    Y=Y-1
+    w=np.dot(vh.transpose(),np.dot(np.linalg.inv(np.diag(s)),np.dot(u1.transpose(),Y)))
     return w
 
 #Predict targets for the test set. Return vector of predicted targets. Note that a vector of booleans
@@ -311,6 +316,6 @@ def Classification_Acc(prediction,actual):
 #Driver Code:
 weight=SVD_Classification(np.vstack((xtrain,xvalid)),np.vstack((ytrain,yvalid)))
 #Predict target values for test set:
-p=Prediction_Classification(xtest,weight)
+p=Prediction_Classification(np.vstack((xtrain,xvalid)),weight)
 #Calculate accuracy of predicted values:
-Classification_Acc(p,ytest)
+Classification_Acc(p,np.vstack((ytrain,yvalid)))
