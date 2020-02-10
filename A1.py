@@ -282,7 +282,7 @@ RMSE(p,ytest)
 
 #Code for Classification:
 #Load data
-xtrain, xvalid, xtest, ytrain, yvalid, ytest = load_dataset('iris')
+xtrain, xvalid, xtest, ytrain, yvalid, ytest = load_dataset('mnist_small')
 
 #Function to comupte weight vector by minimizing least squares loss between the model and actual data.
 #Note that the target values were converted from booleans to integers (0->False and 1->True).
@@ -303,7 +303,12 @@ def Prediction_Classification(x_test,w):
     padding=np.ones((np.shape(x_test)[0],1))
     X=np.hstack((padding,x_test))
     pred=np.dot(X,weight)
-    return (pred>0)
+    for i in pred:
+        idx=np.argmax(i)
+        i[idx]=True
+        i[0:idx]=False
+        i[idx+1:len(i)]=False     
+    return pred
 
 #Determine accuracy for the predicted values on test set.
 def Classification_Acc(prediction,actual):
@@ -316,6 +321,6 @@ def Classification_Acc(prediction,actual):
 #Driver Code:
 weight=SVD_Classification(np.vstack((xtrain,xvalid)),np.vstack((ytrain,yvalid)))
 #Predict target values for test set:
-p=Prediction_Classification(np.vstack((xtrain,xvalid)),weight)
+p=Prediction_Classification(xtest,weight)
 #Calculate accuracy of predicted values:
-Classification_Acc(p,np.vstack((ytrain,yvalid)))
+Classification_Acc(p,ytest)
