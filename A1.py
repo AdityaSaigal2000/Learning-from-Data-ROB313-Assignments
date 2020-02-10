@@ -6,11 +6,8 @@ from data_utils import load_dataset
 import math
 import matplotlib.pyplot as plt
 
-#Loading Dataset (the argument inside load_dataset was changed depending on the data to be used)
 xtrain, xvalid, xtest, ytrain, yvalid, ytest = load_dataset('mauna_loa')
 
-#KNN function for regression. Takes the training 'x' values, 'y' values, the query point, the 
-#number of nearest neighbours to compute (k) and the norm to use (1 or 2)
 def KNN(x_loader,y_loader,point,k,norm):
     prev_dist=float('inf')
     nn=[]
@@ -51,7 +48,7 @@ def GetCrossValRMSE(x_train,y_train,k,norm):
 def BestK_Regression(x_train,y_train,norm):
     error=[]
     k_values=[]
-    for k in range (1,40):
+    for k in range (1,20):
         error=error+[GetCrossValRMSE(x_train,y_train,k,norm)]
         k_values=k_values+[k]
         print(k,error[k-1])
@@ -103,14 +100,32 @@ def Test_Predictions(x_train,y_train,x_test,y_test,k,norm):
 
 #Driver Code
 
+shuffling=True #Set this to False for no shuffling
+
+#This code is used to shuffle the training and validation data. It was noticed that shuffling
+#allows for better cross-validation accuracy and led to different optimal K-values and test accuracy.
+if shuffling:
+    np.random.seed(10)
+    rng_state = np.random.get_state()
+    np.random.shuffle(xtrain)
+    np.random.set_state(rng_state)
+    np.random.shuffle(ytrain)
+    rng_state = np.random.get_state()
+    np.random.shuffle(xvalid)
+    np.random.set_state(rng_state)
+    np.random.shuffle(yvalid)
+
 #Finding the best K-value for 2-norm
-print(BestK_Regression(list(xtrain)+list(xvalid),list(ytrain)+list(yvalid),2))
+print(BestK_Regression(list(xtrain)+list(xvalid),list(ytrain)+list(yvalid),1))
 #Finding test error for best K-Value
 print(Test_Error(list(xtrain)+list(xvalid),list(ytrain)+list(yvalid),xtest,ytest,12,2))
 #Plotting Validation predictions
-Plot_Validation(list(xtrain)+list(xvalid),list(ytrain)+list(yvalid),12,2)
+Plot_Validation(list(xtrain)+list(xvalid),list(ytrain)+list(yvalid),2,2)
 #Plotting test predictions
 Test_Predictions(list(xtrain)+list(xvalid),list(ytrain)+list(yvalid),xtest,ytest,12,2)
+
+
+
 
 ##### KNN Classification Code (Question 2) #######
 
