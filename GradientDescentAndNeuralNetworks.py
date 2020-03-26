@@ -233,6 +233,7 @@ def unsure_network(x_test,W1,W2,W3,b1,b2,b3):
 gradient=value_and_grad(BCE_Loss,argnum=[1,2,3,4,5,6])
 
 #Initializing weights using the Xavier Scheme.
+np.random.seed(10)
 w1 = np.random.randn(100,784)/np.sqrt(784)
 w2 = np.random.randn(100,100)/np.sqrt(784)
 w3 = np.random.randn(10,100)/np.sqrt(784)
